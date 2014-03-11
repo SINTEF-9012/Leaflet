@@ -15,7 +15,7 @@ L.SVG = L.Renderer.extend({
 	},
 
 	_update: function () {
-		if (this._map._animatingZoom) { return; }
+		if (this._map._animatingZoom && this._bounds) { return; }
 
 		L.Renderer.prototype._update.call(this);
 
@@ -147,7 +147,7 @@ L.SVG = L.Renderer.extend({
 	},
 
 	_fireMouseEvent: function (e) {
-		this._paths[L.stamp(e.target)]._fireMouseEvent(e);
+		this._paths[L.stamp(e.target || e.srcElement)]._fireMouseEvent(e);
 	}
 });
 
@@ -184,6 +184,3 @@ L.Browser.svg = !!(document.createElementNS && L.SVG.create('svg').createSVGRect
 L.svg = function (options) {
 	return L.Browser.svg || L.Browser.vml ? new L.SVG(options) : null;
 };
-
-// default instance to use when adding vectors to the map
-L.SVG.instance = L.svg();

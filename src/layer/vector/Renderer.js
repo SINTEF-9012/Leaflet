@@ -45,7 +45,7 @@ L.Renderer = L.Layer.extend({
 
 	_animateZoom: function (e) {
 		var origin = e.origin.subtract(this._map._getCenterLayerPoint()),
-		    offset = this._bounds.min.add(e.delta).add(origin.multiplyBy(1 - e.scale));
+		    offset = this._bounds.min.add(origin.multiplyBy(1 - e.scale));
 
 		L.DomUtil.setTransform(this._container, offset, e.scale);
 	},
@@ -64,8 +64,11 @@ L.Renderer = L.Layer.extend({
 L.Map.include({
 	// used by each vector layer to decide which renderer to use
 	getRenderer: function (layer) {
-		var renderer = layer.options.renderer || this.options.renderer ||
-				(L.SVG && L.SVG.instance) || (L.Canvas && L.Canvas.instance);
+		var renderer = layer.options.renderer || this.options.renderer || this._renderer;
+
+		if (!renderer) {
+			renderer = this._renderer = (L.SVG && L.svg()) || (L.Canvas && L.canvas());
+		}
 
 		if (!this.hasLayer(renderer)) {
 			this.addLayer(renderer);
